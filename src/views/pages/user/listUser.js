@@ -2,7 +2,6 @@ import React from "react";
 import {
   CCard,
   CCardBody,
-  CCardHeader,
   CCol,
   CRow,
   CTable,
@@ -12,8 +11,6 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CPagination,
-  CPaginationItem,
   CModal,
   CModalHeader,
   CModalTitle,
@@ -26,10 +23,8 @@ import {
   CInputGroupText,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilPlus, cilPencil, cilTrash, cilLockLocked } from "@coreui/icons";
+import { cilLockLocked } from "@coreui/icons";
 import api from "../../../const/api";
-import moment from "moment";
-import Loading from "../Loading";
 
 export default class ListUser extends React.Component {
   constructor(props) {
@@ -45,39 +40,14 @@ export default class ListUser extends React.Component {
       pageList: 1,
       pageNumber: 10,
       error: "",
-      activated: null,
-      role_id: null,
-      name: null,
+      activated: -1,
+      name: "",
       id: 0,
     };
   }
 
   componentDidMount() {
-    // this.getUserData(1);
-    const userTemp = [
-      {
-        id: 1,
-        name: "User",
-        surname: "Default",
-        gender: "M",
-        address: "Tana",
-        number_phone: "033313516",
-        email: "defaul@gmail.com",
-        activated: 1,
-        role_id: 1,
-      },
-      {
-        id: 2,
-        name: "User2",
-        surname: "Default2",
-        gender: "M",
-        address: "Tana",
-        number_phone: "03336556",
-        email: "defaul2@gmail.com",
-        activated: 0,
-        role_id: 2,
-      },
-    ];
+    this.getUserData();
     const roleTemp = [
       {
         id: 1,
@@ -93,7 +63,7 @@ export default class ListUser extends React.Component {
       },
     ];
 
-    this.setState({ users: userTemp, roles: roleTemp });
+    this.setState({ roles: roleTemp });
   }
 
   pagination = (totalPages) => {
@@ -104,34 +74,42 @@ export default class ListUser extends React.Component {
     this.setState({ pagination: page });
   };
 
-  getUserData = (page, pageNumber) => {
+  getUserData = (nom = null, status = -1) => {
+    let wheres = [`valide=1`];
+    if (nom && nom !== "") wheres.push(`nom=${nom}`);
+    if (status && status >= 0) wheres.push(`active=${status}`);
+    wheres = wheres.join("&");
+    if (wheres !== "") wheres = `?${wheres}`;
     this.setLoading(true);
-    fetch(api(`users/page/${page}`), { method: "GET" }).then((res) => {
+    fetch(api(`users${wheres}`), { method: "GET" }).then((res) => {
       if (res.ok) {
         return res.json().then((data) => {
           this.setState({
-            users: data.users,
-            pageList: page,
-            pageNumber: pageNumber,
-            totalPage: data.pagination.totalPages,
+            users: data,
           });
-          this.pagination(data.pagination.totalPages);
           this.setLoading(false);
         });
       }
     });
   };
 
-  activatedUser(activation) {
-    fetch(api(`users/${this.state.users[this.state.id].id}`), {
-      method: "DELETE",
+  activatedUser(id) {
+    fetch(api(`users/activate/${id}`), {
+      method: "PUT",
     }).then((res) => {
       if (res.ok) {
-        const tmp = [...this.state.users];
-        tmp.splice(this.state.id, 1);
-        this.setState({
-          users: tmp,
-        });
+        this.getUserData();
+        this.setDeleteModalState(false);
+      }
+    });
+  }
+
+  deactivatedUser(id) {
+    fetch(api(`users/deactivate/${id}`), {
+      method: "PUT",
+    }).then((res) => {
+      if (res.ok) {
+        this.getUserData();
         this.setDeleteModalState(false);
       }
     });
@@ -159,21 +137,15 @@ export default class ListUser extends React.Component {
   }
 
   search() {
-    const { activated, role_id, name, users } = this.state;
-    // function to search
+    const { activated, name } = this.state;
+    this.getUserData(name, activated);
   }
 
   render() {
     const {
       users,
-      loading,
-      pageList,
-      pageNumber,
-      pagination,
-      totalPage,
       deleteModalState,
       id,
-      roles,
     } = this.state;
     // if (loading) {
     //   return <Loading />;
@@ -211,35 +183,16 @@ export default class ListUser extends React.Component {
                       component="label"
                       htmlFor="inputGroupSelect01"
                     >
-                      Role
-                    </CInputGroupText>
-                    <CFormSelect
-                      id="inputGroupSelect01"
-                      onChange={this.setRoleId}
-                    >
-                      <option> </option>
-                      {roles &&
-                        roles.map((c, index) => (
-                          <option key={index} value={c.id}>
-                            {c.entitled}
-                          </option>
-                        ))}
-                    </CFormSelect>
-                  </CInputGroup>
-                  <CInputGroup>
-                    <CInputGroupText
-                      component="label"
-                      htmlFor="inputGroupSelect01"
-                    >
                       Status
                     </CInputGroupText>
                     <CFormSelect
                       id="inputGroupSelect01"
                       onChange={this.setActivation}
+                      value={this.state.activated}
                     >
-                      <option value={1}>Activer </option>
-
-                      <option value={0}> Désactiver</option>
+                      <option value={-1}>Tous</option>
+                      <option value={1}>Activé</option>
+                      <option value={0}>Désactivé</option>
                     </CFormSelect>
                   </CInputGroup>
                   <div className="d-grid">
@@ -264,44 +217,30 @@ export default class ListUser extends React.Component {
                   <CTable>
                     <CTableHead>
                       <CTableRow>
-                        <CTableHeaderCell scope="col">Name </CTableHeaderCell>
+                        <CTableHeaderCell scope="col">Nom </CTableHeaderCell>
                         <CTableHeaderCell scope="col">Prénom</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Genre</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Adresse</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">Numero</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Email</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Status</CTableHeaderCell>
-                        <CTableHeaderCell scope="col">
-                          Date de création
-                        </CTableHeaderCell>
                       </CTableRow>
                     </CTableHead>
                     <CTableBody>
                       {users &&
                         users.map((user, index) => (
                           <CTableRow key={user.id}>
-                            <CTableDataCell>{user.name}</CTableDataCell>
-                            <CTableDataCell>{user.surname}</CTableDataCell>
-                            <CTableDataCell>{user.gender}</CTableDataCell>
-                            <CTableDataCell>{user.address}</CTableDataCell>
-                            <CTableDataCell>{user.number_phone}</CTableDataCell>
-                            <CTableDataCell>{user.email}</CTableDataCell>
-                            {user.activated === 0 ? (
+                            <CTableDataCell>{user.NOM}</CTableDataCell>
+                            <CTableDataCell>{user.PRENOM}</CTableDataCell>
+                            <CTableDataCell>{user.EMAIL}</CTableDataCell>
+                            {user.ACTIVE === 0 ? (
                               <CTableDataCell style={{ color: "red" }}>
-                                Désactiver
+                                Désactivé
                               </CTableDataCell>
                             ) : (
                               <CTableDataCell style={{ color: "green" }}>
-                                Activer
+                                Activé
                               </CTableDataCell>
                             )}
 
-                            <CTableDataCell>
-                              {moment(user.created_date).format(
-                                "YYYY-MM-DD HH:mm:ss"
-                              )}
-                            </CTableDataCell>
-                            <CTableDataCell>
+                            {/* <CTableDataCell>
                               <CButton
                                 color={"light"}
                                 onClick={() =>
@@ -310,7 +249,7 @@ export default class ListUser extends React.Component {
                               >
                                 Autorisations d'accès <CIcon icon={cilPencil} />
                               </CButton>
-                            </CTableDataCell>
+                            </CTableDataCell> */}
                             <CTableDataCell>
                               <CButton
                                 color={"danger"}
@@ -324,34 +263,6 @@ export default class ListUser extends React.Component {
                     </CTableBody>
                   </CTable>
                 </div>
-                <CPagination aria-label="Page navigation example">
-                  <CPaginationItem
-                    aria-label="Previous"
-                    disabled={pageList === 1}
-                    onClick={() => this.getUserData(pageList - 1, pageNumber)}
-                  >
-                    <span aria-hidden="true">&laquo;</span>
-                  </CPaginationItem>
-                  {pagination.map((page, index) => (
-                    <CPaginationItem
-                      key={index}
-                      active={page === pageList}
-                      onClick={() => this.getUserData(page, pageNumber)}
-                    >
-                      {` ${page} `}
-                    </CPaginationItem>
-                  ))}
-                  <CPaginationItem
-                    aria-label="Next"
-                    disabled={
-                      totalPage - pageList === 0 ||
-                      (users && users.length === 0)
-                    }
-                    onClick={() => this.getUserData(pageList + 1, pageNumber)}
-                  >
-                    <span aria-hidden="true"> &raquo; </span>
-                  </CPaginationItem>
-                </CPagination>
               </CCardBody>
             </CCard>
           </CCol>
@@ -367,7 +278,10 @@ export default class ListUser extends React.Component {
           <CModalBody>
             <p>
               Voulez-vous activer ou désactiver{" "}
-              {users && users.length > 0 && id < users.length && users[id].name}
+              {users &&
+                users.length > 0 &&
+                id < users.length &&
+                `${users[id].NOM} ${users[id].PRENOM}`}
               ?
             </p>
           </CModalBody>
@@ -378,10 +292,10 @@ export default class ListUser extends React.Component {
             >
               Annuler
             </CButton>
-            <CButton color="danger" onClick={() => this.activatedUser(0)}>
+            <CButton color="danger" onClick={() => this.deactivatedUser(this.state.users[this.state.id].ID)}>
               Désactiver
             </CButton>
-            <CButton color="success" onClick={() => this.activatedUser(1)}>
+            <CButton color="success" onClick={() => this.activatedUser(this.state.users[this.state.id].ID)}>
               Activer
             </CButton>
           </CModalFooter>

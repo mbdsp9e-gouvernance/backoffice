@@ -79,9 +79,9 @@ const ListPurchase = React.lazy(() =>
 const PurchaseDetail = React.lazy(() =>
   import("./views/pages/purchase/purchaseDetail")
 );
-const AddPurchase = React.lazy(() =>
-  import("./views/pages/purchase/addPurchase")
-);
+// const AddPurchase = React.lazy(() =>
+//   import("./views/pages/purchase/addPurchase")
+// );
 
 //Debt
 const DebtDetail = React.lazy(() => import("./views/pages/debt/debtDetail"));

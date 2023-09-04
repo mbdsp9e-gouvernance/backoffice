@@ -6,7 +6,6 @@ import {
   CCol,
   CContainer,
   CForm,
-  CFormInput,
   CInputGroup,
   CInputGroupText,
   CRow,

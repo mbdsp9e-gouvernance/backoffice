@@ -12,15 +12,11 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CPagination,
-  CPaginationItem,
-  CInputGroup,
-  CInputGroupText,
-  CFormSelect,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilInfo } from "@coreui/icons";
 import Loading from "../Loading";
+import api from "../../../const/api";
 // import api from "../../../const/api";
 // import Moment from "moment";
 
@@ -28,61 +24,31 @@ export default class Registration extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pageList: 1,
-      pageNumber: 20,
-      pagination: [1, 2, 3],
-      totalPage: 3,
-      typeFilter: 0,
       registrations: [],
       loading: true,
     };
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        registrations: [
-          {
-            name: "cedric004",
-            type: "Personne",
-            fullName: "Rakotomaharo Cedric",
-            date: "20/07/2023",
-          },
-          {
-            name: "bici",
-            type: "Entreprise",
-            fullName: "BICI",
-            date: "21/07/2023",
-          },
-          {
-            name: "cedric004",
-            type: "Personne",
-            fullName: "Rakotomaharo Cedric",
-            date: "20/07/2023",
-          },
-          {
-            name: "bici",
-            type: "Entreprise",
-            fullName: "BICI",
-            date: "21/07/2023",
-          },
-          {
-            name: "cedric004",
-            type: "Personne",
-            fullName: "Rakotomaharo Cedric",
-            date: "20/07/2023",
-          },
-          {
-            name: "bici",
-            type: "Entreprise",
-            fullName: "BICI",
-            date: "21/07/2023",
-          },
-        ],
-        loading: false,
-      });
-    }, 1000);
+    this.getUserData();
   }
+
+  getUserData = () => {
+    let wheres = [`valide=0`];
+    wheres = wheres.join("&");
+    if (wheres !== "") wheres = `?${wheres}`;
+    this.setLoading(true);
+    fetch(api(`users${wheres}`), { method: "GET" }).then((res) => {
+      if (res.ok) {
+        return res.json().then((data) => {
+          this.setState({
+            registrations: data,
+          });
+          this.setLoading(false);
+        });
+      }
+    });
+  };
 
   setTypeFilter = (e) => {
     this.setState({
@@ -90,14 +56,15 @@ export default class Registration extends React.Component {
     });
   };
 
+  setLoading = (e) => {
+    this.setState({
+      loading: e,
+    });
+  };
+
   render() {
     const {
-      pageList,
-      pageNumber,
-      pagination,
-      totalPage,
       loading,
-      typeFilter,
       registrations,
     } = this.state;
     if (loading) return <Loading />;
@@ -109,7 +76,7 @@ export default class Registration extends React.Component {
               <CCardHeader>
                 <span className="d-grid gap-2 d-md-flex justify-content-between">
                   <strong>Validation des inscriptions</strong>
-                  <CInputGroup style={{ width: "300px" }}>
+                  {/* <CInputGroup style={{ width: "300px" }}>
                     <CInputGroupText
                       component="label"
                       htmlFor="inputGroupSelect01"
@@ -126,7 +93,7 @@ export default class Registration extends React.Component {
                       <option value={1}>Personne</option>
                       <option value={2}>Entreprise</option>
                     </CFormSelect>
-                  </CInputGroup>
+                  </CInputGroup> */}
                 </span>
               </CCardHeader>
               <CCardBody>
@@ -134,16 +101,13 @@ export default class Registration extends React.Component {
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell scope="col">
-                        Nom d'utilisateur
+                        Nom
                       </CTableHeaderCell>
                       <CTableHeaderCell scope="col">
-                        Type de compte
+                        Prénom
                       </CTableHeaderCell>
                       <CTableHeaderCell scope="col">
-                        Personne ou Entreprise
-                      </CTableHeaderCell>
-                      <CTableHeaderCell scope="col">
-                        Date d'inscription
+                        Email
                       </CTableHeaderCell>
                       <CTableHeaderCell scope="col">
                         Détails et validation
@@ -153,16 +117,15 @@ export default class Registration extends React.Component {
                   <CTableBody>
                     {registrations.map((data, index) => (
                       <CTableRow key={index}>
-                        <CTableDataCell>{data.name}</CTableDataCell>
-                        <CTableDataCell>{data.type}</CTableDataCell>
-                        <CTableDataCell>{data.fullName}</CTableDataCell>
-                        <CTableDataCell>{data.date}</CTableDataCell>
+                        <CTableDataCell>{data.NOM}</CTableDataCell>
+                        <CTableDataCell>{data.PRENOM}</CTableDataCell>
+                        <CTableDataCell>{data.EMAIL}</CTableDataCell>
                         <CTableDataCell>
                           <CButton
                             color={"light"}
                             onClick={() =>
                               this.props.history.push(
-                                `/registration/${data.type}`
+                                `/registration/${data.ID}`
                               )
                             }
                           >
@@ -173,7 +136,7 @@ export default class Registration extends React.Component {
                     ))}
                   </CTableBody>
                 </CTable>
-                <CPagination aria-label="Page navigation example">
+                {/* <CPagination aria-label="Page navigation example">
                   <CPaginationItem
                     aria-label="Previous"
                     disabled={pageList === 1}
@@ -197,7 +160,7 @@ export default class Registration extends React.Component {
                   >
                     <span aria-hidden="true"> &raquo; </span>
                   </CPaginationItem>
-                </CPagination>
+                </CPagination> */}
               </CCardBody>
             </CCard>
           </CCol>

@@ -11,6 +11,7 @@ import React, { Component } from "react";
 // import api from "../../const/api";
 import BackButton from "../../../components/BackButton";
 import Loading from "../Loading";
+import api from "../../../const/api";
 // import Moment from "moment";
 
 export default class RegistrationValidation extends Component {
@@ -23,38 +24,38 @@ export default class RegistrationValidation extends Component {
   }
 
   componentDidMount() {
-    const personDetail = {
-      username: "cedric004",
-      lastName: "Rakotomaharo",
-      surname: "Cedric",
-      birthdate: "10/09/1989",
-      address: "Lot IVB 300 Analamahitsy",
-      email: "cedricrak@gmail.com",
-      contact: "0340719284",
-      gender: "Homme",
-      date: "20/07/2023",
-    };
-    const enterpriseDetail = {
-      username: "bici",
-      name: "BICI",
-      activity: "Développement informatique",
-      nif: "198479237497427384",
-      stat: "4340933940327470",
-      place: "Lot AB123 Andoharanofotsy",
-      email: "bicimg@moov.mg",
-      contact: "0331176959",
-      date: "21/07/2023",
-    };
-    setTimeout(() => {
-      this.setState({
-        details:
-          this.props.match.params.id === "Personne"
-            ? personDetail
-            : enterpriseDetail,
-        loading: false,
-      });
-    }, 1000);
+    this.getUserData();
   }
+
+  validateUser = () => {
+    fetch(api(`users/validate/${this.props.match.params.id}`), {
+      method: "PUT",
+    }).then((res) => {
+      if (res.ok) {
+        this.props.history.push("/registration");
+      }
+    });
+  }
+
+  getUserData = () => {
+    this.setLoading(true);
+    fetch(api(`users/${this.props.match.params.id}`), { method: "GET" }).then(
+      (res) => {
+        if (res.ok) {
+          return res.json().then((data) => {
+            this.setState({
+              details: data,
+            });
+            this.setLoading(false);
+          });
+        }
+      }
+    );
+  };
+
+  setLoading = (e) => {
+    this.setState({ loading: e });
+  };
 
   render() {
     const { loading, details } = this.state;
@@ -70,117 +71,38 @@ export default class RegistrationValidation extends Component {
               <strong>Détails et validation d'inscription</strong>
             </CCardHeader>
             <CCardBody>
-              {this.props.match.params.id && this.props.match.params.id === "Personne" && <CListGroup flush>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Nom d'utilisateur: </strong>
-                    {details.username}
-                  </span>
-                </CListGroupItem>
+              <CListGroup flush>
                 <CListGroupItem className="d-flex justify-content-between align-items-center">
                   <span>
                     <strong> Nom: </strong>
-                    {`${details.lastName} ${details.surname}`}
+                    {`${details.NOM}`}
                   </span>
                 </CListGroupItem>
                 <CListGroupItem className="d-flex justify-content-between align-items-center">
                   <span>
-                    <strong> Date de naissance: </strong>
-                    {details.birthdate}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Sexe: </strong>
-                    {details.gender}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Contact: </strong>
-                    {details.contact}
+                    <strong> Prénom: </strong>
+                    {details.PRENOM}
                   </span>
                 </CListGroupItem>
                 <CListGroupItem className="d-flex justify-content-between align-items-center">
                   <span>
                     <strong> Email: </strong>
-                    {details.email}
+                    {details.EMAIL}
                   </span>
                 </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Adresse: </strong>
-                    {details.address}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Date d'inscription: </strong>
-                    {details.date}
-                  </span>
-                </CListGroupItem>
-              </CListGroup>}
-              {this.props.match.params.id && this.props.match.params.id === "Entreprise" && <CListGroup flush>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Nom d'utilisateur: </strong>
-                    {details.username}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Nom: </strong>
-                    {details.name}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Secteur d'activité: </strong>
-                    {details.activity}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> NIF: </strong>
-                    {details.nif}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> STAT: </strong>
-                    {details.stat}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Contact: </strong>
-                    {details.contact}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Email: </strong>
-                    {details.email}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Siège social: </strong>
-                    {details.place}
-                  </span>
-                </CListGroupItem>
-                <CListGroupItem className="d-flex justify-content-between align-items-center">
-                  <span>
-                    <strong> Date d'inscription: </strong>
-                    {details.date}
-                  </span>
-                </CListGroupItem>
-              </CListGroup>}
+              </CListGroup>
             </CCardBody>
           </CCard>
           <div className="mb-5 d-grid gap-2 d-md-flex justify-content-end">
-            <CButton className="btn btn-danger">Refuser</CButton>
-            <CButton className="btn btn-success">Valider</CButton>
+            <CButton
+              className="btn btn-danger"
+              onClick={() => {
+                this.props.history.push("/registration");
+              }}
+            >
+              Refuser
+            </CButton>
+            <CButton className="btn btn-success" onClick={this.validateUser}>Valider</CButton>
           </div>
         </CCol>
       </>

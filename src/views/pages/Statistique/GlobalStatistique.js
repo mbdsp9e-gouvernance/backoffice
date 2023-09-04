@@ -7,12 +7,10 @@ import {
   CInputGroup,
   CFormInput,
   CInputGroupText,
-  CFormSelect,
   CRow,
   CButton,
   CCol,
 } from "@coreui/react";
-import { CChart } from "@coreui/react-chartjs";
 import api from "../../../const/api";
 import Loading from "../Loading";
 export default class GlobalStatistique extends React.Component {
@@ -23,19 +21,88 @@ export default class GlobalStatistique extends React.Component {
       dataMonthEntry: [1423, 2874],
       dataMonthExpense: [9172, 6821],
       dataMonthBenefit: [3800, 2891],
-      labels: ['Analamanga', 'Vakinakaratra'],
+      labels: ["Analamanga", "Vakinakaratra"],
       firstDate: "",
       secondDate: "",
       totalMonth: [],
       typeFilter: 0,
+      tenders: 0,
+      soumissions: 0,
+      reussite: 0,
     };
   }
   componentDidMount() {
-    setTimeout(() => {
-      this.setState({
-        loading: false,
-      });
-    }, 1000);
+    this.getTenderCount();
+    this.getSoumissionCount();
+    this.getReussiteCount();
+  }
+
+  getTenderCount() {
+    let wheres = [];
+    if (this.state.firstDate !== "")
+      wheres.push(`date1=${this.state.firstDate}`);
+    if (this.state.secondDate !== "")
+      wheres.push(`date2=${this.state.secondDate}`);
+    wheres = wheres.join('&');
+    if(wheres!=='') wheres=`?${wheres}`;
+    this.setLoading(true);
+    fetch(api(`tenders/count${wheres}`), { method: "GET" }).then((res) => {
+      if (res.ok) {
+        return res.json().then((data) => {
+          this.setState({
+            tenders: data.count,
+          });
+          this.setLoading(false);
+        });
+      }
+    });
+  }
+
+  getSoumissionCount() {
+    let wheres = [];
+    if (this.state.firstDate !== "")
+      wheres.push(`date1=${this.state.firstDate}`);
+    if (this.state.secondDate !== "")
+      wheres.push(`date2=${this.state.secondDate}`);
+    wheres = wheres.join('&');
+    if(wheres!=='') wheres=`?${wheres}`;
+    this.setLoading(true);
+    fetch(api(`soumissions/count${wheres}`), { method: "GET" }).then((res) => {
+      if (res.ok) {
+        return res.json().then((data) => {
+          this.setState({
+            soumissions: data.count,
+          });
+          this.setLoading(false);
+        });
+      }
+    });
+  }
+
+  getReussiteCount() {
+    let wheres = [];
+    if (this.state.firstDate !== "")
+      wheres.push(`date1=${this.state.firstDate}`);
+    if (this.state.secondDate !== "")
+      wheres.push(`date2=${this.state.secondDate}`);
+    wheres = wheres.join('&');
+    if(wheres!=='') wheres=`?${wheres}`;
+    this.setLoading(true);
+    fetch(api(`soumissions/reussite${wheres}`), { method: "GET" }).then((res) => {
+      if (res.ok) {
+        return res.json().then((data) => {
+          this.setState({
+            reussite: data.count,
+          });
+          this.setLoading(false);
+        });
+      }
+    });
+  }
+
+  filter = () => {
+    this.getTenderCount();
+    this.getSoumissionCount();
   }
 
   setTypeFilter = (e) => {
@@ -45,16 +112,7 @@ export default class GlobalStatistique extends React.Component {
   };
 
   render() {
-    const {
-      loading,
-      firstDate,
-      secondDate,
-      labels,
-      dataMonthEntry,
-      dataMonthExpense,
-      dataMonthBenefit,
-      typeFilter,
-    } = this.state;
+    const { loading, firstDate, secondDate } = this.state;
     if (loading) {
       return <Loading />;
     }
@@ -96,7 +154,7 @@ export default class GlobalStatistique extends React.Component {
                       />
                     </CInputGroup>
                   </CCol>
-                  <CCol>
+                  {/* <CCol>
                     <CInputGroup style={{ height: "30px" }}>
                       <CInputGroupText component="label" htmlFor="offerType">
                         Type
@@ -131,9 +189,9 @@ export default class GlobalStatistique extends React.Component {
                         <option value={3}>Alaotra</option>
                       </CFormSelect>
                     </CInputGroup>
-                  </CCol>
+                  </CCol> */}
                   <CCol>
-                    <CButton style={{ width: "100%" }}>Afficher</CButton>
+                    <CButton style={{ width: "100%" }} onClick={this.filter}>Afficher</CButton>
                   </CCol>
                 </CRow>
                 {/* <CRow className="align-items-end">
@@ -147,26 +205,30 @@ export default class GlobalStatistique extends React.Component {
             <CCard>
               <CCardHeader>Appels d'offres</CCardHeader>
               <CCardBody>
-                <CCardTitle className="stat-title">1 623</CCardTitle>
+                <CCardTitle className="stat-title">
+                  {this.state.tenders}
+                </CCardTitle>
               </CCardBody>
             </CCard>
             <CCard>
               <CCardHeader>Soumissions</CCardHeader>
               <CCardBody>
-                <CCardTitle className="stat-title">18 203</CCardTitle>
+                <CCardTitle className="stat-title">
+                  {this.state.soumissions}
+                </CCardTitle>
               </CCardBody>
             </CCard>
             <CCard>
               <CCardHeader>Taux de réussite</CCardHeader>
               <CCardBody>
-                <CCardTitle className="stat-title">87%</CCardTitle>
+                <CCardTitle className="stat-title">{Number(this.state.reussite).toPrecision(2)}%</CCardTitle>
               </CCardBody>
             </CCard>
           </div>
         </div>
         <br></br>
         <div>
-          <CCard>
+          {/* <CCard>
             <CCardHeader>Nombre de soummissions</CCardHeader>
             <CCardBody>
               <CChart
@@ -202,7 +264,7 @@ export default class GlobalStatistique extends React.Component {
                 labels="months"
               />
             </CCardBody>
-          </CCard>
+          </CCard> */}
         </div>
       </>
     );

@@ -8,9 +8,9 @@ import withParams from "../hooks/withParams";
 
 class AppContent extends Component {
   render() {
-    // if (!sessionStorage.getItem("token") && !sessionStorage.getItem("user")) {
-    //   window.location.replace("/");
-    // }
+    if (!sessionStorage.getItem("user")) {
+      window.location.replace("/");
+    }
     return (
       <CContainer lg>
         <Suspense fallback={<CSpinner color="primary" />}>

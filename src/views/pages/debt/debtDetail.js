@@ -81,7 +81,7 @@ export default class DebtDetail extends React.Component {
   }
 
   render() {
-    const { debtDetail, loading, debt_id, history } = this.state;
+    const { debtDetail, loading } = this.state;
     return (
       <>
         {loading ? (

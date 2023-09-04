@@ -28,9 +28,9 @@ export default class Login extends Component {
   }
 
   componentDidMount() {
-    // if (sessionStorage.getItem("token") && sessionStorage.getItem("user")) {
-    //   window.location.replace("/Home");
-    // }
+    if (sessionStorage.getItem("user")) {
+      window.location.replace("/statistique/global");
+    }
   }
 
   onChangeUserName = (e) => {
@@ -52,34 +52,34 @@ export default class Login extends Component {
   }
 
   loginFunction = (event) => {
-    // this.setLoad(true);
-    // const option = {
-    //   headers: { "Content-Type": "application/json" },
-    //   method: "POST",
-    //   body: JSON.stringify({
-    //     username: this.state.username,
-    //     password: this.state.password,
-    //   }),
-    // };
-    // fetch(api("users/login"), option).then((res) => {
-    //   if (res.ok) {
-    //     res.json().then((data) => {
-    //       sessionStorage.setItem("token", data.token);
-    //       sessionStorage.setItem("user", JSON.stringify(data.user));
-    //       this.props.history.push("/Home");
-    //     });
-    //     this.setLoad(false);
-    //   } else {
-    //     this.setLoad(false);
-    //     res.json().then((res) => {
-    //       console.log(res.message);
-    //       this.setState({
-    //         error: "mot de passe ou nom d'utilisateur incorrect",
-    //       });
-    //     });
-    //   }
-    // });
-    this.props.history.push("/Home");
+    this.setLoad(true);
+    const option = {
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+      body: JSON.stringify({
+        email: this.state.username,
+        password: this.state.password,
+      }),
+    };
+    fetch(api("users/login"), option).then((res) => {
+      if (res.ok) {
+        res.json().then((data) => {
+          // sessionStorage.setItem("token", data.token);
+          sessionStorage.setItem("user", JSON.stringify(data.user));
+          this.props.history.push("/statistique/global");
+        });
+        this.setLoad(false);
+      } else {
+        this.setLoad(false);
+        res.json().then((res) => {
+          // console.log(res.message);
+          this.setState({
+            error: "mot de passe ou nom d'utilisateur incorrect",
+          });
+        });
+      }
+    });
+    // this.props.history.push("/statistique/global");
   };
   render() {
     const { loading } = this.state;

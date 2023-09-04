@@ -1,20 +1,4 @@
 import React from "react";
-import {
-  CButton,
-  CCard,
-  CCardBody,
-  CContainer,
-  CForm,
-  CFormInput,
-  CInputGroup,
-  CInputGroupText,
-  CRow,
-  CFormSelect,
-  CFormTextarea,
-  CCardTitle,
-  CCardText,
-  CFormCheck,
-} from "@coreui/react";
 import api from "../../../const/api";
 import Loading from "../Loading";
 export default class Home extends React.Component {
@@ -260,13 +244,6 @@ export default class Home extends React.Component {
   render() {
     const {
       loading,
-      services,
-      customers,
-      message,
-      load,
-      formValues,
-      total,
-      otherMessage,
     } = this.state;
     return (
       <div className="bg-light min-vh-50 d-flex flex-row align-items-center">

@@ -16,7 +16,7 @@ import {
   CPaginationItem,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilTrash, cilPencil, cilPlus } from "@coreui/icons";
+import { cilPlus } from "@coreui/icons";
 import api from "../../../const/api";
 import Loading from "../Loading";
 
@@ -54,81 +54,81 @@ export default class ListExpense extends React.Component {
       if (res.ok) {
         return res.json().then((data) => {
           let expenseData = [];
-          data.expense.forEach((expense) => {
-            if (expense.month == 1) {
-              expenseData.push({
-                month: expense.month,
-                label: "Janvier",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 2) {
-              expenseData.push({
-                month: expense.month,
-                label: "Fevrier",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 3) {
-              expenseData.push({
-                month: expense.month,
-                label: "Mars",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 4) {
-              expenseData.push({
-                month: expense.month,
-                label: "Avril",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 5) {
-              expenseData.push({
-                month: expense.month,
-                label: "Mai",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 6) {
-              expenseData.push({
-                month: expense.month,
-                label: "Juin",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 7) {
-              expenseData.push({
-                month: expense.month,
-                label: "Juillet",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 8) {
-              expenseData.push({
-                month: expense.month,
-                label: "Août",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 9) {
-              expenseData.push({
-                month: expense.month,
-                label: "Septembre",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 10) {
-              expenseData.push({
-                month: expense.month,
-                label: "Octobre",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 11) {
-              expenseData.push({
-                month: expense.month,
-                label: "Novembre",
-                totalAmount: expense.total_expense,
-              });
-            } else if (expense.month == 12) {
-              expenseData.push({
-                month: expense.month,
-                label: "Décembre",
-                totalAmount: expense.total_expense,
-              });
-            }
-          });
+          // data.expense.forEach((expense) => {
+          //   if (expense.month == 1) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Janvier",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 2) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Fevrier",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 3) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Mars",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 4) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Avril",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 5) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Mai",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 6) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Juin",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 7) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Juillet",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 8) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Août",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 9) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Septembre",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 10) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Octobre",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 11) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Novembre",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   } else if (expense.month == 12) {
+          //     expenseData.push({
+          //       month: expense.month,
+          //       label: "Décembre",
+          //       totalAmount: expense.total_expense,
+          //     });
+          //   }
+          // });
           this.setState({
             expense: expenseData,
             pageList: page,
